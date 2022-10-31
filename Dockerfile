@@ -29,20 +29,20 @@ RUN chmod +x /usr/local/bin/install-php-extensions
 
 # persistent / runtime deps
 RUN apk add --no-cache \
-		acl \
-		fcgi \
-		file \
-		gettext \
-		git \
+	acl \
+	fcgi \
+	file \
+	gettext \
+	git \
 	;
 
 RUN set -eux; \
-    install-php-extensions \
-    	intl \
-    	zip \
-    	apcu \
-		opcache \
-    ;
+	install-php-extensions \
+	intl \
+	zip \
+	apcu \
+	opcache \
+	;
 
 ###> recipes ###
 ###< recipes ###
@@ -74,10 +74,10 @@ COPY --from=composer:2 --link /usr/bin/composer /usr/bin/composer
 # prevent the reinstallation of vendors at every changes in the source code
 COPY composer.* symfony.* ./
 RUN set -eux; \
-    if [ -f composer.json ]; then \
-		composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress; \
-		composer clear-cache; \
-    fi
+	if [ -f composer.json ]; then \
+	composer install --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress; \
+	composer clear-cache; \
+	fi
 
 # copy sources
 COPY --link  . .
@@ -85,12 +85,12 @@ RUN rm -Rf docker/
 
 RUN set -eux; \
 	mkdir -p var/cache var/log; \
-    if [ -f composer.json ]; then \
-		composer dump-autoload --classmap-authoritative --no-dev; \
-		composer dump-env prod; \
-		composer run-script --no-dev post-install-cmd; \
-		chmod +x bin/console; sync; \
-    fi
+	if [ -f composer.json ]; then \
+	composer dump-autoload --classmap-authoritative --no-dev; \
+	composer dump-env prod; \
+	composer run-script --no-dev post-install-cmd; \
+	chmod +x bin/console; sync; \
+	fi
 
 # Dev image
 FROM app_php AS app_php_dev
@@ -108,6 +108,8 @@ RUN set -eux; \
 	install-php-extensions xdebug
 
 RUN rm -f .env.local.php
+RUN apk add --no-cache bash
+RUN apk add --allow-untrusted symfony-cli-a.apk
 
 # Build Caddy with the Mercure and Vulcain modules
 FROM caddy:${CADDY_VERSION}-builder-alpine AS app_caddy_builder
